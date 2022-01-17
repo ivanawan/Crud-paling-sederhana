@@ -257,8 +257,9 @@ class Tabel extends Migration
 
 
 
-- langkah selanjunya adalah mendefinisikan route di <span style="background-color:#ff24 ;">routes->web.php</span> dengan menambahkan route /post untuk post datanya.
+- langkah selanjunya adalah mendefinisikan route di <span style="background-color:#ff24 ;">routes->web.php</span> dengan menambahkan route /post untuk post datanya dan route /add untuk view form nya.
 ```
+Route::view('/add','forms');
 Route::post('/post',[CrudController::class,'Store']);
 ```
 - lalu pada bagian crud controller buat sebuah fungsi baru bernama Store.
