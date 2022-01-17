@@ -108,7 +108,7 @@ class Tabel extends Migration
   ```
   disini route utama akan di arahkan ke dalam CrudController function index. coba refresh page browserjika tidak error maka route sudah berhasil terhubung ke controller.
 
-  - kali ini kita kan mengambil dari dari databse dengan [query bulder](https://laravel.com/docs/8.x/queries) edit file index tadi menjadi seperti ini 
+- kali ini kita kan mengambil dari dari databse dengan [query bulder](https://laravel.com/docs/8.x/queries) edit file index tadi menjadi seperti ini 
   ```
   public function index(){
         return view("welcome",[
@@ -183,8 +183,8 @@ class Tabel extends Migration
     </body>
   </html>
   ```  
-  - pada bagian view kita mengunakan fungsi @foreach untuk me looping array yang berada di dalam variabel persons. di dalam fungsi tersebut setiap array person akan membuat 1 baris table baru / setiap kali looping kode yang berda didalam fungsi @foreach akan di jalankan lagi. 
-  - untuk mengambil data dari variabel person seperti ini, jika ingin id pada kolom id dengan cara : 
+- pada bagian view kita mengunakan fungsi @foreach untuk me looping array yang berada di dalam variabel persons. di dalam fungsi tersebut setiap array person akan membuat 1 baris table baru / setiap kali looping kode yang berda didalam fungsi @foreach akan di jalankan lagi. 
+- untuk mengambil data dari variabel person seperti ini, jika ingin id pada kolom id dengan cara : 
   ```
    <td>{{$person->id}}<td> 
   ```
