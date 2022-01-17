@@ -7,9 +7,9 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## SetUp Project 
+# SetUp Project 
 
-Pertama buat Sebuah database dengan nama laravel di [PhpMyadmin](http://tutorbuatdb), Setelah DataBase di buat, kita create new project mengunakan [composer](http://composer), sebelum itu pastikan terlebih dahulu di komputer kalian sudah terinstall composer caranya ketik composer di cmd/terminal jika muncul logo composer berarti composer sudah terInstall di komputer kalian, pastikan juga kalian mempunyai koneksi internet.   
+Pertama buat Sebuah database dengan nama laravel di [PhpMyadmin](https://www.dewaweb.com/blog/cara-membuat-database-di-xampp/), Setelah DataBase di buat, kita create new project mengunakan [composer](https://www.niagahoster.co.id/blog/cara-install-composer/), sebelum itu pastikan terlebih dahulu di komputer kalian sudah terinstall composer caranya ketik composer di cmd/terminal jika muncul logo composer berarti composer sudah terInstall di komputer kalian, pastikan juga kalian mempunyai koneksi internet.   
 
 
 - Buka cmd/terminal kalian lalu ketikan perintah berikut:
@@ -29,7 +29,7 @@ php  artisan serve
 ``` 
 
    
-## Membuat migration 
+# Membuat migration 
 
  migration adalah suatu fitur pada laravel yang memungkin kan kita, mengelola databse dengan lebih mudah dan cepat.
 
@@ -108,7 +108,7 @@ class Tabel extends Migration
   ```
   disini route utama akan di arahkan ke dalam CrudController function index. coba refresh page browserjika tidak error maka route sudah berhasil terhubung ke controller.
 
-  - kali ini kita kan mengambil dari dari databse dengan [query bulder](http://sjdhfgkjsdha) edit file index tadi menjadi seperti ini 
+  - kali ini kita kan mengambil dari dari databse dengan [query bulder](https://laravel.com/docs/8.x/queries) edit file index tadi menjadi seperti ini 
   ```
   public function index(){
         return view("welcome",[
@@ -119,6 +119,15 @@ class Tabel extends Migration
   jangan lupa menambahkan kode ini di atas class CrudeController
   ```
   use Illuminate\Support\Facades\DB;
+  ```
+  pada function tersebut kita me return sebuah view dengan mengirimkan sebuah array persons dengan valu dari data yang di dapatkan dari tabel persons. atu bisa di tulis seperti ini:
+  ```
+  public function index(){
+       $data_persons= DB::table('persons')->get();
+        return view("welcome",[
+            'persons'=>$data_persons,
+        ]);
+    }
   ```
 - kemudian kita edit view wellcome.blade.php menjadi seperti ini 
   ```
@@ -252,5 +261,141 @@ class Tabel extends Migration
 ```
 Route::post('/post',[CrudController::class,'Store']);
 ```
+- lalu pada bagian crud controller buat sebuah fungsi baru bernama Store.
+  kalian harus meperhatikan penulisan huruf kecil dan besar. misal Store dan store dianggap berbeda.
+  ```
+  public function Store(Request $request){
+        DB::table('persons')->insert($request->except('_token'));
+        return redirect('/');
+  }
+  ``` 
+  pada bagian parameter di isi Variabel $request untuk menangkap data yang dikirimkan dari route /post. pada kode tersebut kita melakukan oprasi Mass Assignment dimana kita langsung menyimpan data dari view, dengan kodisi bahwa name pada form memiliki nama yang sama dengan yang ada pada tabel database. disitu kita juga mengkeculikan **_token** token adalah hasil dari rendering @csrf  yang berada di view. jika ingin melihat data apa saja yang ada pada $request bisa mengunaka cara berikut.
+  ```
+   public function Store(Request $request){
+       dd($request->all());
+        DB::table('persons')->insert($request->except('_token'));
+        return redirect('/');
+  }
+  ``` 
+  ohya return di sini maksudnya ketika data telah di simpan akan di kembalikan ke route **/** atau route utama.
+
+  # Update Data 
+  di wellcome view kan kita udah nambahin button update yang ini
+  ```
+  <a href="{{'/edit/'.$person->id}}" style="background-color:yellow">edit</a>
+  ```
+  di sini jika di pencet akan di arahkan ke halaman /edit/param_id.
+ - sekarang kita bikin Route untuk edit di bagian routes->web.php seperti yang sebelumnya lalu tambahkan 
+   ```
+   Route::get('/edit/{id}',[CrudController::class,'edit']);
+   ``` 
+   disini yang perlu diperhatikan kita menangkap parameter id dengan mengunakan **{id}** lalu kita akan mengarahkan route ke function edit.
+
+ - membuat function edit di CrudController
+  ```
+  public function edit($id){
+        return view('forms',[
+            'edit'=>DB::table('persons')->where('id',$id)->first()
+        ]);
+    }
+  ```
+  disini kita menambahkan parameter pada bagian function edit sesui dengan nama variabel yang di tangkap di Route contoh di route 
+  ```
+  Route::get('/edit/{userId}',[CrudController::class,'edit']);
+  ``` 
+  maka di controller paramnya menjadi **$userId**. disini kita akan mengambil data yang bertujuan untuk di tampilkan di forms.blade.php 
   
- 
+- selanjutnya kita akan merubah form.blade.php pada bagian tag form menjadi seperti ini.
+  ```
+    <form method="POST" @if(isset($edit)) action="{{'/post/edit/'.$edit->id}}" @else action="/post" @endif >
+        @csrf
+            <label>nama</label>
+            <input  type="text"  @if(isset($edit)) value="{{$edit->nama}}" @endif name="nama"><br>
+            <label>kelas</label>
+            <input type="text"  @if(isset($edit)) value="{{$edit->kelas}}" @endif name="kelas"><br >
+            <button type="submit">submit</button>
+        </form>
+  ```
+  disini saya mengunakan if else jika variabel $edit ada maka akan jadi form edit 
+  variabel edit kita set saat mereturn view di functioin edit.
+  atau jika kamu mau membuat from edit secara tepisah bisa seperti ini.
+  ```
+  <html>
+  <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Laravel</title>
+
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+        
+
+        <style>
+            body {
+                font-family: 'Nunito', sans-serif;
+            }
+            input{
+                border:1px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <form method="POST" action="{{'/post/edit/'.$edit->id}}"  >
+        @csrf
+            <label>nama</label>
+            <input  type="text" value="{{$edit->nama}}"><br>
+            <label>kelas</label>
+            <input type="text"   value="{{$edit->kelas}}" ><br >
+            <button type="submit">submit</button>
+        </form>
+    </body>
+   </html>
+
+  ```
+ bisa kita liat tidak jauh berbeda dari form input. bedanya cuma di bagian action routnya sama attribut value pada tag input untuk menampilkan data di kolom input.
+ jadi saya sarankan mengunakan cara yang pertama untuk mempersingkat waktu. 
+
+- lalu kita tambahkan route untuk route post/edit/param_id
+  ```
+   Route::post('/post/edit/{id}',[CrudController::class,'update']);
+  ``` 
+  di bagian ini seperti pada route /edit kita akan menangkap variabel id
+  lalu kita retun ke function update.
+
+- ya pada function update kita mengunakan $request dan $id sebagai parameter 
+  ```
+   public function update(Request $request, $id){
+        DB::table('persons')->where('id', $id)->update($request->except('_token'));
+         return redirect('/'); 
+    }
+  ```
+  pada bagian ini kita mengunakan where clause untuk mencari data dengan id yang sama dengan variabel $id lalu jika ketemu kita update. untuk update mirip seperti insert yang sebelumnya ya, lalu kita retrun ke halaman utama.
+
+# Delete data 
+pada bagian ini kita juga sudah membuat button nya di view wellcome 
+  ``` 
+  <a href="{{'/delete/'.$person->id}}" style="background-color:red">delete</a> 
+  ```
+- pertama2 bikin routnya dulu
+  
+ ```
+Route::get('/delete/{id}',[CrudController::class,'delete']);
+ ```
+ di bagian ini hampir sama seperti rote /edit disini kita juga akan menangkap Variabel id lalu kia kirimkan di controller.
+
+- di controller  buat sebuah function baru bernama **delete**
+```
+public function delete($id){
+        DB::table('persons')->where('id', $id)->delete();
+        return redirect('/');
+    }
+```   
+disini kita cari dulu data di tabel persons yang id nya sama dengan  kolom id 
+**where('id',$id)** lau kita pangil fungsi delete **delete()** lalu jika sudah kita retun ke route utama.
+
+
+
+
+

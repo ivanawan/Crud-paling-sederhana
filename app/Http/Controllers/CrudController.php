@@ -13,7 +13,7 @@ class CrudController extends Controller
     }
 
     public function Store(Request $request){
-        dd($request->all());
+        // dd($request->all());
         DB::table('persons')->insert($request->except('_token'));
         return redirect('/');
     }
